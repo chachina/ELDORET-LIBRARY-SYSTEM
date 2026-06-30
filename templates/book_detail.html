@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{{ book.title }}{% endblock %}
+{% block content %}
+
+<div class="card" style="display:flex; gap:20px; flex-wrap:wrap;">
+  <div class="book-cover" style="width:160px; height:200px; border-radius:8px; flex-shrink:0; background:{{ book.cover_color }};">
+  </div>
+  <div style="flex:1; min-width:240px;">
+    <span class="badge">{{ book.genre }}</span>{% if book.subject %} <span class="badge">{{ book.subject }}</span>{% endif %}
+    <h1>{{ book.title }}</h1>
+    <p class="subtitle">by {{ book.author }}</p>
+    <p>{{ book.description }}</p>
+    <p style="font-size:0.85rem; color:var(--muted)">
+      ISBN: {{ book.isbn or "N/A" }} &nbsp;|&nbsp;
+      {{ book.available_copies }} of {{ book.total_copies }} copies available
+      {% if avg_rating %} &nbsp;|&nbsp; <span class="stars">{{ "★" * (avg_rating|round|int) }}</span> {{ "%.1f"|format(avg_rating) }} ({{ rating_count }} ratings){% endif %}
+    </p>
+
+    <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+      {% if my_borrow %}
+        <form method="POST" action="{{ url_for('return_book', borrow_id=my_borrow.id) }}">
+          <button type="submit" class="btn btn-accent">Mark as Returned</button>
+        </form>
+        <span class="status-pill status-borrowed" style="align-self:center;">Due {{ my_borrow.due_date }}</span>
+      {% else %}
+        <form method="POST">
+          <input type="hidden" name="action" value="borrow">
+          <button type="submit" class="btn" {% if book.available_copies < 1 %}disabled{% endif %}>
+            {% if book.available_copies < 1 %}Unavailable{% else %}Borrow this Book{% endif %}
+          </button>
+        </form>
+        <form method="POST">
+          <input type="hidden" name="action" value="reserve">
+          <button type="submit" class="btn btn-outline">Reserve</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">{{ "Update Your Rating" if my_rating else "Rate this Book" }}</h2>
+  <form method="POST">
+    <input type="hidden" name="action" value="rate">
+    <div class="form-group">
+      <label>Rating</label>
+      <select name="rating" required>
+        <option value="">Select a rating</option>
+        {% for n in [5,4,3,2,1] %}
+          <option value="{{ n }}" {% if my_rating and my_rating.rating == n %}selected{% endif %}>{{ n }} star{{ 's' if n != 1 }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Review (optional)</label>
+      <textarea name="review" placeholder="What did you think?">{{ my_rating.review if my_rating else '' }}</textarea>
+    </div>
+    <button type="submit" class="btn">{{ "Update Rating" if my_rating else "Submit Rating" }}</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">Reader Reviews ({{ reviews|length }})</h2>
+  {% if reviews %}
+    {% for r in reviews %}
+      <div class="review">
+        <span class="stars">{{ "★" * r.rating }}{{ "☆" * (5 - r.rating) }}</span>
+        <strong>{{ r.full_name }}</strong>
+        <div class="meta">{{ r.created_at }}</div>
+        {% if r.review %}<p style="margin:6px 0 0;">{{ r.review }}</p>{% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="subtitle">No reviews yet — be the first to share your thoughts.</p>
+  {% endif %}
+</div>
+
+<a href="{{ url_for('home') }}" class="btn btn-outline">&larr; Back to Catalogue</a>
+
+{% endblock %}

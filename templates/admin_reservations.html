@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Reservations{% endblock %}
+{% block content %}
+
+<h1>Reservations</h1>
+<p class="subtitle">Review and manage member book reservations.</p>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Book</th><th>Member</th><th>Reserved On</th><th>Status</th><th>Update</th></tr></thead>
+    <tbody>
+      {% for r in reservations %}
+      <tr>
+        <td>{{ r.title }} <span style="color:var(--muted); font-size:0.8rem;">by {{ r.author }}</span></td>
+        <td>{{ r.full_name }}<br><span style="color:var(--muted); font-size:0.8rem;">{{ r.email }}</span></td>
+        <td>{{ r.reservation_date[:10] }}</td>
+        <td><span class="status-pill status-{{ r.status }}">{{ r.status }}</span></td>
+        <td>
+          {% if r.status == 'pending' %}
+          <form method="POST" style="display:flex; gap:6px;">
+            <input type="hidden" name="reservation_id" value="{{ r.id }}">
+            <button type="submit" name="status" value="fulfilled" class="btn btn-sm btn-accent">Fulfill</button>
+            <button type="submit" name="status" value="cancelled" class="btn btn-sm btn-danger">Cancel</button>
+          </form>
+          {% else %}—{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if not reservations %}<p class="empty-state">No reservations yet.</p>{% endif %}
+</div>
+
+{% endblock %}

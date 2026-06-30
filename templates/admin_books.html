@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Manage Books{% endblock %}
+{% block content %}
+
+<h1>Manage Books</h1>
+<p class="subtitle">Add new titles to the catalogue or remove existing ones.</p>
+
+<div class="card">
+  <h2 style="margin-top:0">Add a New Book</h2>
+  <form method="POST">
+    <input type="hidden" name="action" value="add">
+    <div class="form-row">
+      <div class="form-group"><label>Title</label><input type="text" name="title" required></div>
+      <div class="form-group"><label>Author</label><input type="text" name="author" required></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Genre</label><input type="text" name="genre" required placeholder="e.g. African Literature"></div>
+      <div class="form-group"><label>Subject</label><input type="text" name="subject" placeholder="e.g. Historical Fiction"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>ISBN</label><input type="text" name="isbn"></div>
+      <div class="form-group"><label>Copies</label><input type="number" name="total_copies" value="1" min="1" required></div>
+      <div class="form-group"><label>Cover Color</label><input type="color" name="cover_color" value="#4a6fa5"></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea name="description"></textarea></div>
+    <button type="submit" class="btn">Add Book</button>
+  </form>
+</div>
+
+<h2>Catalogue ({{ books|length }})</h2>
+<div class="card">
+  <table>
+    <thead><tr><th>Title</th><th>Author</th><th>Genre</th><th>Copies</th><th>Available</th><th></th></tr></thead>
+    <tbody>
+      {% for b in books %}
+      <tr>
+        <td>{{ b.title }}</td>
+        <td>{{ b.author }}</td>
+        <td>{{ b.genre }}</td>
+        <td>{{ b.total_copies }}</td>
+        <td>{{ b.available_copies }}</td>
+        <td style="display:flex; gap:6px;">
+          <a class="btn btn-sm btn-outline" href="{{ url_for('admin_edit_book', book_id=b.id) }}">Edit</a>
+          <form method="POST" class="inline" onsubmit="return confirm('Remove this book?');">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="book_id" value="{{ b.id }}">
+            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

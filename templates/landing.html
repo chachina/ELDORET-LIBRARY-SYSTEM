@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Eldoret Book Club & Library{% endblock %}
+{% block content %}
+<div class="hero-bg">
+  <div class="landing-hero">
+    <h1>Discover books made just for you</h1>
+    <p>No more scrolling through hundreds of titles. Our personalised "For You" engine learns from what you borrow, rate, and read — and surfaces the books you'll actually love.</p>
+    <div class="landing-actions">
+      <a class="btn" href="{{ url_for('register') }}">Join the Library</a>
+      <a class="btn btn-outline" href="{{ url_for('login') }}">Log In</a>
+    </div>
+  </div>
+</div>
+
+<div class="feature-grid">
+  <div class="card">
+    <h3>🏷️ User-Preference Tagging</h3>
+    <p>Every borrow and rating quietly teaches the system your favourite genres and subjects.</p>
+  </div>
+  <div class="card">
+    <h3>⚖️ Weight &amp; Rank Engine</h3>
+    <p>Recommendations are scored on recency, frequency, genre match, and peer ratings — not just popularity.</p>
+  </div>
+  <div class="card">
+    <h3>📊 For Librarians</h3>
+    <p>An admin dashboard with usage analytics, reservation management, and engagement reports.</p>
+  </div>
+</div>
+{% endblock %}

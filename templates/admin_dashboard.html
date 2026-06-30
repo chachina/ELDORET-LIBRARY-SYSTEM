@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+
+<h1>Library Dashboard</h1>
+<p class="subtitle">Overview of catalogue activity and member engagement.</p>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="num">{{ total_books }}</div><div class="label">Total Books</div></div>
+  <div class="stat-card"><div class="num">{{ total_members }}</div><div class="label">Members</div></div>
+  <div class="stat-card"><div class="num">{{ active_borrows }}</div><div class="label">Active Borrows</div></div>
+  <div class="stat-card"><div class="num">{{ pending_reservations }}</div><div class="label">Pending Reservations</div></div>
+</div>
+
+<div style="display:flex; gap:18px; flex-wrap:wrap;">
+  <div class="card" style="flex:1; min-width:280px;">
+    <h2 style="margin-top:0">Most Borrowed Books</h2>
+    {% if most_borrowed %}
+    <table>
+      <thead><tr><th>Title</th><th>Author</th><th>Borrows</th></tr></thead>
+      <tbody>
+        {% for b in most_borrowed %}
+        <tr><td>{{ b.title }}</td><td>{{ b.author }}</td><td>{{ b.borrow_count }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="empty-state">No borrowing activity yet.</p>{% endif %}
+  </div>
+
+  <div class="card" style="flex:1; min-width:280px;">
+    <h2 style="margin-top:0">Most Active Members</h2>
+    {% if active_members %}
+    <table>
+      <thead><tr><th>Member</th><th>Activity</th></tr></thead>
+      <tbody>
+        {% for m in active_members %}
+        <tr><td>{{ m.full_name }}</td><td>{{ m.activity }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="empty-state">No member activity yet.</p>{% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">Borrows by Genre</h2>
+  {% if genre_stats %}
+    {% set max_count = genre_stats[0].borrow_count %}
+    {% for g in genre_stats %}
+      <div style="margin-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:3px;">
+          <span>{{ g.genre }}</span><span>{{ g.borrow_count }}</span>
+        </div>
+        <div style="background:#eee; border-radius:6px; height:10px; overflow:hidden;">
+          <div style="background:var(--primary); height:100%; width:{{ (g.borrow_count / max_count * 100)|round|int }}%;"></div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="empty-state">No data yet.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

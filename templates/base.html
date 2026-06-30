@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Eldoret Book Club & Library{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="navbar">
+    <a class="brand" href="{{ url_for('index') }}">
+      📚 Eldoret Book Club &amp; Library
+    </a>
+    <nav>
+      {% if current_user_role == 'admin' %}
+        <a href="{{ url_for('admin_dashboard') }}" class="{{ 'active' if request.endpoint == 'admin_dashboard' }}">Dashboard</a>
+        <a href="{{ url_for('admin_books') }}" class="{{ 'active' if request.endpoint in ['admin_books','admin_edit_book'] }}">Books</a>
+        <a href="{{ url_for('admin_members') }}" class="{{ 'active' if request.endpoint == 'admin_members' }}">Members</a>
+        <a href="{{ url_for('admin_reservations') }}" class="{{ 'active' if request.endpoint == 'admin_reservations' }}">Reservations</a>
+        <a href="{{ url_for('admin_reports') }}" class="{{ 'active' if request.endpoint == 'admin_reports' }}">Reports</a>
+        <span>{{ current_user_name }}</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      {% elif current_user_role == 'member' %}
+        <a href="{{ url_for('home') }}" class="{{ 'active' if request.endpoint == 'home' }}">For You</a>
+        <a href="{{ url_for('my_account') }}" class="{{ 'active' if request.endpoint == 'my_account' }}">My Account</a>
+        <span>{{ current_user_name }}</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </nav>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-wrap">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

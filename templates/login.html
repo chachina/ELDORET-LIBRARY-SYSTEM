@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Log In{% endblock %}
+{% block content %}
+<div class="hero-bg hero-auth">
+<div class="card auth-card">
+  <h1>Welcome back</h1>
+  <p class="subtitle">Log in to see your personalised recommendations.</p>
+  <form method="POST">
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" name="email" required placeholder="you@example.com">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" name="password" required placeholder="••••••••">
+    </div>
+    <button type="submit" class="btn" style="width:100%">Log In</button>
+  </form>
+  <p style="margin-top:14px; font-size:0.85rem; color:var(--muted)">
+    Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
+  </p>
+  <hr style="border:none;border-top:1px solid var(--border); margin:16px 0">
+  <p style="font-size:0.78rem; color:var(--muted)">
+    Demo logins — Admin: <code>admin@library.co.ke</code> / <code>admin123</code><br>
+    Member: <code>faith@example.com</code> / <code>member123</code>
+  </p>
+</div>
+</div>
+{% endblock %}

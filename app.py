@@ -30,7 +30,7 @@ DB_PATH = os.path.join(BASE_DIR, "library.db")
 SCHEMA_PATH = os.path.join(BASE_DIR, "schema.sql")
 
 app = Flask(__name__)
-app.secret_key = "eldoret-library-recsys-secret-key-2026"
+app.secret_key = os.environ.get("SECRET_KEY", "eldoret-library-recsys-secret-key-2026")
 
 
 # ----------------------------------------------------------------------
@@ -602,10 +602,19 @@ def not_found(e):
 
 
 # ----------------------------------------------------------------------
-if __name__ == "__main__":
+# Initialise DB on import so WSGI servers like Gunicorn/Render work.
+# ----------------------------------------------------------------------
+def ensure_database_ready():
     fresh = init_db_if_needed()
     if fresh:
         import seed
         seed.run(DB_PATH)
         print("Database created and seeded with demo data.")
+
+
+ensure_database_ready()
+
+
+# ----------------------------------------------------------------------
+if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=5000)

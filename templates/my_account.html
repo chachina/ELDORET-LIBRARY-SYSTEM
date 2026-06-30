@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}My Account{% endblock %}
+{% block content %}
+
+<h1>My Account</h1>
+<p class="subtitle">Your borrowing history, reservations, ratings, and preference profile.</p>
+
+<div class="card">
+  <h2 style="margin-top:0">Your Preference Tags</h2>
+  <p class="subtitle" style="margin-top:-6px;">Automatically learned from your activity — powers your "For You" recommendations.</p>
+  {% if tags %}
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      {% for t in tags %}
+        <span class="badge" style="background:#eaf1ea; font-size:0.82rem; padding:6px 14px;">
+          {{ t.genre }} &mdash; {{ (t.weight * 100)|round|int }}%
+        </span>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty-state">Borrow or rate a book to start building your profile.</p>
+  {% endif %}
+</div>
+
+<h2>Currently Borrowed &amp; History</h2>
+<div class="card">
+  {% if borrowed %}
+  <table>
+    <thead><tr><th>Title</th><th>Genre</th><th>Borrowed</th><th>Due / Returned</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for b in borrowed %}
+      <tr>
+        <td><a href="{{ url_for('book_detail', book_id=b.book_id) }}">{{ b.title }}</a></td>
+        <td>{{ b.genre }}</td>
+        <td>{{ b.borrow_date }}</td>
+        <td>{{ b.return_date if b.return_date else b.due_date }}</td>
+        <td><span class="status-pill status-{{ b.status }}">{{ b.status }}</span></td>
+        <td>
+          {% if b.status == 'borrowed' %}
+          <form method="POST" action="{{ url_for('return_book', borrow_id=b.id) }}" class="inline">
+            <button type="submit" class="btn btn-sm btn-accent">Return</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-state">You haven't borrowed any books yet.</p>
+  {% endif %}
+</div>
+
+<h2>My Reservations</h2>
+<div class="card">
+  {% if reservations %}
+  <table>
+    <thead><tr><th>Title</th><th>Author</th><th>Reserved On</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for r in reservations %}
+      <tr>
+        <td><a href="{{ url_for('book_detail', book_id=r.book_id) }}">{{ r.title }}</a></td>
+        <td>{{ r.author }}</td>
+        <td>{{ r.reservation_date }}</td>
+        <td><span class="status-pill status-{{ r.status }}">{{ r.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-state">No reservations placed yet.</p>
+  {% endif %}
+</div>
+
+<h2>My Ratings</h2>
+<div class="card">
+  {% if my_ratings %}
+  <table>
+    <thead><tr><th>Title</th><th>Rating</th><th>Review</th></tr></thead>
+    <tbody>
+      {% for r in my_ratings %}
+      <tr>
+        <td><a href="{{ url_for('book_detail', book_id=r.book_id) }}">{{ r.title }}</a></td>
+        <td><span class="stars">{{ "★" * r.rating }}{{ "☆" * (5 - r.rating) }}</span></td>
+        <td>{{ r.review or "—" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-state">You haven't rated any books yet.</p>
+  {% endif %}
+</div>
+
+{% endblock %}
